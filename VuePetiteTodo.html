@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petite Vue</title>
+    <script src="https://kit.fontawesome.com/9c918e947d.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/petite-vue"></script>
+
+    <style>
+        body {
+            background-color: #242424;
+            color: #fff;
+        }
+        button {
+            cursor: pointer;
+        }
+        .container {
+            text-align: center;
+            margin: 2em;
+            padding: 2em;
+        }
+        .list {
+            text-align: center;
+            display: grid;
+            grid-template-columns: auto auto auto;
+            list-style-type: none;
+            padding: 1em;
+            margin: 1em;
+        }
+        .list-item {
+            margin-bottom: 1em;
+        }
+        .transition {
+            animation: fadeIn 1s;
+        }
+        .completed {
+            text-decoration: line-through;
+        }
+        .hide {
+            display: none;
+        }
+        @keyframes fadeIn {
+            0% {capacity: 0;}
+            100% {opacity: 1;}
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <h1>Consulting Ninja Vue Petite</h1>
+            <h2>Todo List</h2>
+            <!-- Vue Part -->
+            <input v-model="store.newTodo" @keyup.enter="store.addTodo" placeholder="Add a todo">
+            <button @click="store.addTodo">Add Todo</button>
+            <ul class="list">
+                <li class="list-item transition" v-for="(todo, index) in store.todos" :key="todo.id">
+                    <input class="transition" type="checkbox" @change="store.completeTodo(index)" v-bind:checked="todo.completed">
+                    <!-- change between editing and non-editing modes -->
+                    <input class="transition" @dbclick="store.editTodo(index)" v-if="todo.edit === true" :value="todo.text" @input="todo.next = $event.target.value"> 
+                    <span class="transition" @dblick="store.editTodo(index)" :class="[{'completed': todo.completed}, {'hide': todo.edit}]">{{todo.text}}</span>
+                    <button class="transition" @click="store.removeTodo(index)"><i class="fa-solid fa-trash"></i></button>
+                    <button class="tansition" @click="store.addTodo(index)">
+                        <i v-if="todo.edit === false" class="fa-solid fa-pen"></i>
+                        <i v-if="todo.edit === true" class="fa-regular fa-floppy-disk"></i>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const store = PetiteVue.reactive({
+            todos: [],
+            newTodo: '',
+            nextTodoId: 0,
+            todoEdit: '',
+
+            addTodo() {
+                this.todos.push({
+                    id: this.nextTodoId++,
+                    text: this.newTodo,
+                    completed: false,
+                    edit: false
+                });
+                this.newTodo = '';
+            
+            },
+            editTodo: function(index) {
+                this.todos[index].edit = !this.todos[index].edit;
+            },
+            removeTodo: function(index) {
+                this.todos.splice(index, 1);
+            },
+            completeTodo: function(index) {
+                this.todos[index].completed = !this.todos[index].completed;
+            }
+        });
+        PetiteVue.createApp({store}).mount('#app');        
+    </script>
+</body>
+</html>
